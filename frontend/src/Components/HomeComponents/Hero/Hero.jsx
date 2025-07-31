@@ -14,7 +14,7 @@ const Hero = () => {
       autoplay: true,
       loop: true,
       nav: true,
-      dots: true,
+      dots: false,
       smartSpeed: 1200,
     });
   }, []);
