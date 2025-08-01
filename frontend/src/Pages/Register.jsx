@@ -32,7 +32,7 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      await axios.post("http://localhost:3008/save", data);
+      await axios.post("http://localhost:3008", data);
       toast.success("User registered successfully");
       reset();
     } catch (err) {
@@ -117,3 +117,6 @@ const Register = () => {
 };
 
 export default Register;
+
+
+
