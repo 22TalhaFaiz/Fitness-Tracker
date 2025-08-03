@@ -1,8 +1,12 @@
 import React from 'react'
+import ThemeStyleLoader from './ThemeStyleLoader'
 
 const Footer = () => {
   return (
+    <>
+    <ThemeStyleLoader/>
     <div>
+        
         <section class="footer-section">
         <div class="container">
             <div class="row">
@@ -76,6 +80,7 @@ const Footer = () => {
         </div>
     </section>
     </div>
+    </>
   )
 }
 

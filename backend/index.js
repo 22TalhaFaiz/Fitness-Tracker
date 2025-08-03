@@ -1,35 +1,33 @@
-// require("dotenv").config()
-// const exp = require("express")
-// const db = require("./Connection")
-// const cors = require("cors")
-// const router = require("./Routes/route")
-
-// const app = exp();
-
-// app.use(cors());
-// app.use(exp.json());
-// app.use("/", router);
-
-// db().then(()=>{
-//     app.listen(3008,()=>{
-//         console.log("Server Started at http://localhost:3008")
-//     })
-
-// }).catch((e)=>{
-//     console.log(e)
-// })
-
 require("dotenv").config();
 const express = require("express");
+const session = require("express-session")
 const db = require("./Connection");
 const cors = require("cors");
 const router = require("./Routes/route");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials:true,
+}));
 app.use(express.json());
-app.use("/api/auth", router); // So login => /api/auth/login
+
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie:{
+      secure: false,
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24,
+    }
+  })
+);
+
+app.use("/api/auth", router); 
 
 db().then(() => {
   app.listen(process.env.PORT, () => {

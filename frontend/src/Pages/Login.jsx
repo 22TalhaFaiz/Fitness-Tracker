@@ -5,7 +5,7 @@ import { z } from "zod";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const schema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email"),
@@ -13,6 +13,8 @@ const schema = z.object({
 });
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -24,9 +26,14 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/login", data);
-      toast.success("Login successful!");
+      // eslint-disable-next-line no-unused-vars
+      const res = await axios.post("http://localhost:3008/api/auth/l", data , {
+        withCredentials: true,
+      });
+      toast.success( res.data.message || "Login successful!");
       reset();
+      navigate("/dashboard");
+    
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed!");
     }

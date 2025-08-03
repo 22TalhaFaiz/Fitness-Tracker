@@ -32,7 +32,7 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      await axios.post("http://localhost:3008", data);
+      await axios.post("http://localhost:3008/api/auth/r", data);
       toast.success("User registered successfully");
       reset();
     } catch (err) {

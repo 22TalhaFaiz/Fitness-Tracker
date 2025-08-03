@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ThemeStyleLoader from './ThemeStyleLoader';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
+  <ThemeStyleLoader/>
       {/* Overlay */}
       <div
         className={`offcanvas-menu-overlay ${menuOpen ? 'active' : ''}`}
