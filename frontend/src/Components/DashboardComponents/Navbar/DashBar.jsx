@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { FaHome } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 
 const DashboardNavbar = () => {
@@ -41,10 +42,10 @@ const DashboardNavbar = () => {
         <h1 className="text-2xl font-bold text-white mb-8">
           Fitness Tracker
         </h1>
-        <ul className="space-y-4 font-medium">
+        <ul className="space-y-10 font-medium">
           <li>
-            <Link to="/dashboard" className="hover:text-neutral-600 transition">
-              Dashboard
+            <Link to="/dashboard" className="hover:text-neutral-600 transition" > 
+                Dashboard
             </Link>
           </li>
           <li>

@@ -4,6 +4,9 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
+
 const WorkoutChart = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,8 +29,11 @@ const WorkoutChart = () => {
   }, []);
 
   return (
-    <div className="bg-neutral-800 p-6 rounded-lg shadow-md w-full max-w-3xl mx-auto">
-      <h2 className="text-lg font-semibold text-orange-400">Workout Frequency (Last 7 Days)</h2>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }} className="bg-neutral-900 p-6 rounded-lg shadow-md w-full max-w-3xl mx-auto">
+      <h2 className="text-lg font-semibold text-white">Workout Frequency (Last 7 Days)</h2>
 
       {loading ? (
         <p className="text-center text-gray-500">Loading chart...</p>
@@ -40,11 +46,11 @@ const WorkoutChart = () => {
             <XAxis dataKey="date" />
             <YAxis allowDecimals={false} />
             <Tooltip />
-            <Bar dataKey="count" fill="#f97316" />
+            <Bar dataKey="count" fill="#ffffff" />
           </BarChart>
         </ResponsiveContainer>
       )}
-    </div>
+    </motion.div>
   );
 };
 
