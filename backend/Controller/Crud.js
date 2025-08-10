@@ -53,48 +53,53 @@ login: async function (req, res) {
   }
 },
   // REGISTER FUNCTION
-  create: async function (req, res) {
-    try {
-      const { name, email, passw, age } = req.body;
+ create: async function (req, res) {
+  try {
+    const { name, email, passw, age, height, weight, gender, activityLevel, profilePicture } = req.body;
 
-      if (!name || !email || !passw || !age) {
-        return res.status(400).json({ msg: "All Fields Are Required" });
-      }
-
-      const email_check = await User.findOne({ email });
-      if (email_check) {
-        return res.status(409).json({ msg: "Email Already Exists" });
-      }
-
-      const hashed_pass = bcrypt.hashSync(passw, 10);
-
-      const newUser = new User({
-        name,
-        email,
-        password: hashed_pass,
-        age,
-      });
-
-      await newUser.save();
-
-      const emailBody = {
-        to: email,
-        from: process.env.EMAIL,
-        subject: "Account Registered",
-        html: `<h3>Hello ${name}</h3><p>Your account has been registered successfully.</p>`,
-      };
-
-      transporter.sendMail(emailBody, (err, info) => {
-        if (err) console.log("Email error:", err);
-        else console.log("Email sent:", info.response);
-      });
-
-      res.status(201).json({ msg: "User Registered Successfully" });
-    } catch (error) {
-      console.log("Error In Create:", error);
-      res.status(500).json({ msg: error.message });
+    if (!name || !email || !passw || !age || !height || !weight || !gender) {
+      return res.status(400).json({ msg: "All fields are required" });
     }
-  },
+
+    const email_check = await User.findOne({ email });
+    if (email_check) {
+      return res.status(409).json({ msg: "Email already exists" });
+    }
+
+    const hashed_pass = bcrypt.hashSync(passw, 10);
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashed_pass,
+      age,
+      height,
+      weight,
+      gender,
+      activityLevel,
+      profilePicture,
+    });
+
+    await newUser.save();
+
+    // Send confirmation email
+    const emailBody = {
+      to: email,
+      from: process.env.EMAIL,
+      subject: "Welcome to Fitness Tracker",
+      html: `<h3>Hello ${name}</h3>
+             <p>Your account has been created successfully. Let’s crush those fitness goals!</p>`,
+    };
+    transporter.sendMail(emailBody, (err) => {
+      if (err) console.log("Email error:", err);
+    });
+
+    res.status(201).json({ msg: "User registered successfully" });
+  } catch (error) {
+    console.log("Error In Create:", error);
+    res.status(500).json({ msg: error.message });
+  }
+}
 };
 
 module.exports = Crud;

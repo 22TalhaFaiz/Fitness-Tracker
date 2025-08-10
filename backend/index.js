@@ -32,6 +32,7 @@ app.use(session({
 app.use("/api/auth", require("./Routes/route")); 
 app.use("/api/workouts", require("./Routes/workoutRoutes"));
 app.use("/api/analytics", require("./Routes/analyticsRoutes"));
+app.use("/api/profile", require("./Routes/profileRoute"));
 
 // ✅ Start server
 db().then(() => {

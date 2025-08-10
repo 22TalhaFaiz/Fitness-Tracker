@@ -56,7 +56,7 @@ const Workout = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow">
+    <div className="max-w-2xl mx-auto p-6 bg-neutral-800 rounded shadow text-white">
       <h2 className="text-xl font-bold mb-4">Create Workout</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
@@ -146,7 +146,7 @@ const Workout = () => {
           <button
             type="button"
             onClick={() => append({ name: '', sets: 1, reps: 1, weight: 0, notes: '' })}
-            className="bg-orange-500 text-white px-4 py-2 rounded"
+            className="bg-neutral-500 text-white px-4 py-2 rounded"
           >
             Add Exercise
           </button>

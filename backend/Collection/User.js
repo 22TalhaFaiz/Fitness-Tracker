@@ -1,46 +1,50 @@
-// const mongo = require("mongoose")
-
-// const  user_structure = mongo.Schema({
-//     name : {
-//         type :String,
-//         require: true,
-//     },
-
-//     email :{
-//         type :String,
-//         require: true,
-//     },
-//     password:{
-//         type:String,
-//         require:true,
-//     },
-//     age:{
-//         type:String,
-//         require:true,
-//     }
-
-// })
-// module.exports = mongo.model("users", user_structure)
-
-
 const mongoose = require("mongoose");
 
 const user_structure = new mongoose.Schema({
   name: {
     type: String,
-    required: true, // spelling corrected
+    required: true,
+    trim: true,
   },
   email: {
     type: String,
     required: true,
+    unique: true,
+    lowercase: true,
   },
   password: {
     type: String,
     required: true,
   },
   age: {
-    type: String,
+    type: Number,
     required: true,
+  },
+  height: {
+    type: Number, // in cm
+    required: true,
+  },
+  weight: {
+    type: Number, // in kg
+    required: true,
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female", "Other"],
+    required: true,
+  },
+  activityLevel: {
+    type: String,
+    enum: ["Sedentary", "Lightly Active", "Moderately Active", "Very Active"],
+    default: "Sedentary",
+  },
+  profilePicture: {
+    type: String, // URL (from Cloudinary or imgbb)
+    default: "",
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
