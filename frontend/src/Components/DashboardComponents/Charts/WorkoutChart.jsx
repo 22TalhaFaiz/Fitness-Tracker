@@ -13,17 +13,18 @@ const WorkoutChart = () => {
 
   useEffect(() => {
     axios.get('http://localhost:3008/api/analytics/frequency', { withCredentials: true })
-      .then(res => {
-        const formatted = res.data.map(item => ({
-          ...item,
-          date: new Date(item.date).toLocaleDateString('en-GB', {
-            weekday: 'short',
-            day: 'numeric',
-            month: 'short'
-          })
-        }));
-        setData(formatted);
-      })
+.then(res => {
+  console.log("API Response:", res.data); // 👈 See the shape
+  const formatted = res.data.map(item => ({
+    ...item,
+    date: new Date(item.date).toLocaleDateString('en-GB', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short'
+    })
+  }));
+  setData(formatted);
+})
       .catch(err => console.error('Error fetching workout frequency:', err))
       .finally(() => setLoading(false));
   }, []);

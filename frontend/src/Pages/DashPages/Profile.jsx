@@ -135,22 +135,30 @@ const updatePassword = async (data) => {
   } catch (error) {
     setMessage({ type: 'error', text: error.message });
   } finally {
-    setUpdating(false);
+    setUpdating(false);  
   }
 };
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target.result;
-        setValue('profilePicture', imageUrl);
-        setUser({ ...user, profilePicture: imageUrl });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+ const handleImageUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=49425eb415cd63716f797f57d74c533a`, {
+    method: "POST",
+    body: formData
+  });
+
+  const result = await res.json();
+
+  if (result.data && result.data.url) {
+    setValue("profilePicture", result.data.url); // store only URL
+    setUser({ ...user, profilePicture: result.data.url });
+  }
+};
+
 
   useEffect(() => {
     fetchUserProfile();
@@ -178,11 +186,11 @@ const updatePassword = async (data) => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-800 py-8 text-white">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
+      <div className="max-w-3xl mx-auto px-4">
         {/* Header */}
-        <div className="bg-neutral-900 rounded-lg shadow-sm border p-6 mb-6">
-          <div className="flex items-center justify-between">
+        <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900  rounded-lg shadow-sm border p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <div className="w-20 h-20 bg-neutral-800 rounded-full flex items-center justify-center overflow-hidden">
@@ -209,14 +217,14 @@ const updatePassword = async (data) => {
                 )}
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">{user?.name}</h1>
-                <p className="text-gray-600">{user?.email}</p>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">{user?.name}</h1>
+                <p className="text-gray-400 mt-2">{user?.email}</p>
               </div>
             </div>
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center space-x-2 bg-neutral-600 text-white px-4 py-2 rounded-lg hover:bg-neutral-700 transition-colors"
+                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
               >
                 <Edit3 className="w-4 h-4" />
                 <span>Edit Profile</span>
@@ -235,20 +243,23 @@ const updatePassword = async (data) => {
         )}
 
         {/* Profile Information */}
-        <div className="bg-neutral-900 rounded-lg shadow-sm border p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-6">Profile Information</h2>
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 shadow-2xl">
+          <h2 className="text-xl font-semibold text-white flex items-center gap-2 border-b border-gray-700 pb-2">
+               <div className="w-2 h-6 bg-gradient-to-b from-blue-400 to-purple-500 rounded"></div>
+                Profile Information
+          </h2>
           
           <div>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-white mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Name
                 </label>
                 <input
                   {...register('name')}
                   disabled={!isEditing}
-                  className={`w-full px-3 py-2 border rounded-lg bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     !isEditing ? 'bg-gray-50' : 'bg-neutral-800'
                   }`}
                 />
@@ -265,7 +276,7 @@ const updatePassword = async (data) => {
                 <input
                   {...register('email')}
                   disabled={!isEditing}
-                  className={`w-full px-3 py-2 border rounded-lg bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     !isEditing ? 'bg-gray-50' : 'bg-neutral-800'
                   }`}
                 />
@@ -284,7 +295,7 @@ const updatePassword = async (data) => {
                   {...register('age', { valueAsNumber: true })}
                   type="number"
                   disabled={!isEditing}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none  bg-neutral-800 focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200${
                     !isEditing ? 'bg-gray-50' : 'bg-neutral-800'
                   }`}
                 />
@@ -301,7 +312,7 @@ const updatePassword = async (data) => {
                 <select
                   {...register('gender')}
                   disabled={!isEditing}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none bg-neutral-800 focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     !isEditing ? 'bg-gray-50' : 'bg-neutral-800'
                   }`}
                 >
@@ -324,7 +335,7 @@ const updatePassword = async (data) => {
                   {...register('height', { valueAsNumber: true })}
                   type="number"
                   disabled={!isEditing}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none bg-neutral-800 focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     !isEditing ? 'bg-gray-50' : 'bg-neutral-800'
                   }`}
                 />
@@ -343,7 +354,7 @@ const updatePassword = async (data) => {
                   {...register('weight', { valueAsNumber: true })}
                   type="number"
                   disabled={!isEditing}
-                  className={`w-full px-3 py-2 border rounded-lg bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     !isEditing ? 'bg-gray-50' : 'bg-neutral-800'
                   }`}
                 />
@@ -361,7 +372,7 @@ const updatePassword = async (data) => {
                 <select
                   {...register('activityLevel')}
                   disabled={!isEditing}
-                  className={`w-full px-3 py-2 border rounded-lg bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     !isEditing ? 'bg-gray-50' : 'bg-neutral-800'
                   }`}
                 >
@@ -376,7 +387,7 @@ const updatePassword = async (data) => {
             </div>
 
             {isEditing && (
-              <div className="flex space-x-4 mt-6">
+              <div className="flex flex-col sm:flex-row gap-4 mt-6">
                 <button
                   type="button"
                   onClick={handleSubmit(updateProfile)}
@@ -403,16 +414,16 @@ const updatePassword = async (data) => {
         </div>
 
         {/* Password Section */}
-        <div className="bg-neutral-900 rounded-lg shadow-sm border p-6">
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 shadow-2xl">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold flex items-center">
-              <Shield className="w-5 h-5 mr-2" />
+            <h2 className="text-xl font-semibold text-white flex items-center gap-2 border-b border-gray-700 pb-2">
+              <Shield className="w-5 h-5 mr-2 " />
               Password & Security
             </h2>
             {!isEditingPassword && (
               <button
                 onClick={() => setIsEditingPassword(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
               >
                 Change Password
               </button>
@@ -423,13 +434,13 @@ const updatePassword = async (data) => {
             <div onSubmit={handlePasswordSubmit(updatePassword)}>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Current Password
                   </label>
                   <input
                     {...registerPassword('currentPassword')}
                     type="password"
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                   {passwordErrors.currentPassword && (
                     <p className="text-red-500 text-sm mt-1">{passwordErrors.currentPassword.message}</p>
@@ -437,13 +448,13 @@ const updatePassword = async (data) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     New Password
                   </label>
                   <input
                     {...registerPassword('newPassword')}
                     type="password"
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                   {passwordErrors.newPassword && (
                     <p className="text-red-500 text-sm mt-1">{passwordErrors.newPassword.message}</p>
@@ -451,13 +462,13 @@ const updatePassword = async (data) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Confirm New Password
                   </label>
                   <input
                     {...registerPassword('confirmPassword')}
                     type="password"
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                   {passwordErrors.confirmPassword && (
                     <p className="text-red-500 text-sm mt-1">{passwordErrors.confirmPassword.message}</p>
