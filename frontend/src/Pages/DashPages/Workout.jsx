@@ -3,6 +3,8 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Trash2, Dumbbell, Clock, Flame } from 'lucide-react';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 // Zod Schema
 const exerciseSchema = z.object({
@@ -45,9 +47,8 @@ const Workout = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Simulating API call
       console.log('Submitting workout:', data);
-      alert('Workout created successfully');
+      toast.success('Workout created successfully');
     } catch (error) {
       console.error('Workout creation failed', error);
     }
@@ -55,6 +56,7 @@ const Workout = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
+      <ToastContainer/>
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
