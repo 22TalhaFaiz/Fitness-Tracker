@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Trash2, Dumbbell, Clock, Flame } from 'lucide-react';
+import { Plus, Trash2, Dumbbell, Clock, Flame, Loader2 } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
 import "react-toastify/dist/ReactToastify.css";
 
 // Zod Schema
@@ -24,10 +25,13 @@ const workoutSchema = z.object({
 });
 
 const Workout = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const {
     register,
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(workoutSchema),
@@ -47,10 +51,87 @@ const Workout = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log('Submitting workout:', data);
-      toast.success('Workout created successfully');
+      setIsSubmitting(true);
+      
+      // Prepare data for API
+      const workoutData = {
+        ...data,
+        // Add current date if not provided
+        date: new Date().toISOString(),
+        // Clean up the exercises data
+        exercises: data.exercises.map(exercise => ({
+          ...exercise,
+          // Convert empty strings to null for optional fields
+          weight: exercise.weight || null,
+          notes: exercise.notes?.trim() || null,
+        })),
+        // Convert empty caloriesBurned to null
+        caloriesBurned: data.caloriesBurned || null,
+      };
+
+      console.log('Submitting workout data:', workoutData);
+
+      // Make API call to your backend
+      const response = await axios.post(
+        'http://localhost:3008/api/workouts/c', // Adjust this URL to match your backend
+        workoutData,
+        {
+          withCredentials: true, // Include cookies for authentication
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('Workout created successfully:', response.data);
+      
+      // Show success message
+      toast.success('🎉 Workout created successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
+
+      // Reset form after successful submission
+      reset({
+        title: '',
+        type: 'Strength',
+        duration: 0,
+        caloriesBurned: 0,
+        exercises: [{ name: '', sets: 1, reps: 1, weight: 0, notes: '' }],
+      });
+
     } catch (error) {
-      console.error('Workout creation failed', error);
+      console.error('Workout creation failed:', error);
+      
+      // Handle different error cases
+      let errorMessage = 'Failed to create workout. Please try again.';
+      
+      if (error.response) {
+        // Server responded with error status
+        errorMessage = error.response.data?.message || 
+                     error.response.data?.error || 
+                     `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        // Network error
+        errorMessage = 'Network error. Please check your connection.';
+      }
+
+      toast.error(`❌ ${errorMessage}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -86,6 +167,7 @@ const Workout = () => {
                     {...register('title')}
                     className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter workout name..."
+                    disabled={isSubmitting}
                   />
                   {errors.title && <p className="text-red-400 text-sm mt-2 flex items-center gap-1">⚠️ {errors.title.message}</p>}
                 </div>
@@ -95,6 +177,7 @@ const Workout = () => {
                   <select 
                     {...register('type')} 
                     className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    disabled={isSubmitting}
                   >
                     <option value="Cardio">🏃 Cardio</option>
                     <option value="Strength">💪 Strength</option>
@@ -114,6 +197,7 @@ const Workout = () => {
                     {...register('duration', { valueAsNumber: true })}
                     className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="0"
+                    disabled={isSubmitting}
                   />
                   {errors.duration && <p className="text-red-400 text-sm mt-2 flex items-center gap-1">⚠️ {errors.duration.message}</p>}
                 </div>
@@ -128,6 +212,7 @@ const Workout = () => {
                     {...register('caloriesBurned', { valueAsNumber: true })}
                     className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Estimated calories burned..."
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -143,7 +228,8 @@ const Workout = () => {
                 <button
                   type="button"
                   onClick={() => append({ name: '', sets: 1, reps: 1, weight: 0, notes: '' })}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+                  disabled={isSubmitting}
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   <Plus className="w-4 h-4" />
                   Add Exercise
@@ -159,7 +245,8 @@ const Workout = () => {
                         <button
                           type="button"
                           onClick={() => remove(index)}
-                          className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-1 rounded-lg transition-all duration-200"
+                          disabled={isSubmitting}
+                          className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-1 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Trash2 className="w-4 h-4" />
                           Remove
@@ -172,6 +259,7 @@ const Workout = () => {
                         placeholder="Exercise name (e.g., Push-ups, Squats)"
                         {...register(`exercises.${index}.name`)}
                         className="w-full bg-gray-600/50 border border-gray-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                        disabled={isSubmitting}
                       />
                       {errors.exercises?.[index]?.name && (
                         <p className="text-red-400 text-sm flex items-center gap-1">⚠️ {errors.exercises[index].name.message}</p>
@@ -185,6 +273,7 @@ const Workout = () => {
                             placeholder="3"
                             {...register(`exercises.${index}.sets`, { valueAsNumber: true })}
                             className="w-full bg-gray-600/50 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                            disabled={isSubmitting}
                           />
                           {errors.exercises?.[index]?.sets && (
                             <p className="text-red-400 text-xs mt-1">⚠️ {errors.exercises[index].sets.message}</p>
@@ -198,6 +287,7 @@ const Workout = () => {
                             placeholder="12"
                             {...register(`exercises.${index}.reps`, { valueAsNumber: true })}
                             className="w-full bg-gray-600/50 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                            disabled={isSubmitting}
                           />
                           {errors.exercises?.[index]?.reps && (
                             <p className="text-red-400 text-xs mt-1">⚠️ {errors.exercises[index].reps.message}</p>
@@ -211,6 +301,7 @@ const Workout = () => {
                             placeholder="20"
                             {...register(`exercises.${index}.weight`, { valueAsNumber: true })}
                             className="w-full bg-gray-600/50 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                            disabled={isSubmitting}
                           />
                         </div>
                       </div>
@@ -220,6 +311,7 @@ const Workout = () => {
                         {...register(`exercises.${index}.notes`)}
                         className="w-full bg-gray-600/50 border border-gray-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 resize-none"
                         rows="2"
+                        disabled={isSubmitting}
                       />
                     </div>
                   </div>
@@ -230,10 +322,20 @@ const Workout = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 hover:from-blue-600 hover:via-purple-600 hover:to-blue-700 text-white font-semibold py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 hover:from-blue-600 hover:via-purple-600 hover:to-blue-700 text-white font-semibold py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              <Dumbbell className="w-5 h-5" />
-              Create Workout
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating Workout...
+                </>
+              ) : (
+                <>
+                  <Dumbbell className="w-5 h-5" />
+                  Create Workout
+                </>
+              )}
             </button>
           </form>
         </div>

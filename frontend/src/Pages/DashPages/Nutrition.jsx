@@ -1,39 +1,104 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Clipboard } from 'lucide-react'
-import React from 'react'
-import { useForm } from 'react-hook-form'
-import z from 'zod';
-
-const toNumber = (val) => (typeof val === 'string' && val !== '' ? Number(val) : val);
-const toNumberOrUndefined = (val) =>
-  typeof val === 'string' && val.trim() === '' ? undefined : Number(val);
-
-const nutritionSchema = z.object({
-  food: z.string().min(1, 'Invalid Food Name'),
-  calories: z.preprocess(toNumber, z.number().min(1, 'At least 1 calorie')),
-  protein: z.preprocess(toNumber, z.number().min(1, 'At least 1 protein')),
-  carbs: z.preprocess(toNumberOrUndefined, z.number().min(0).optional()),
-  fats: z.preprocess(toNumberOrUndefined, z.number().min(0).optional()),
-});
+import { Clipboard, Search } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
 
 const Nutrition = () => {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors }
-  } = useForm({
-    resolver: zodResolver(nutritionSchema)
+  const [formData, setFormData] = useState({
+    food: '',
+    calories: '',
+    protein: '',
+    carbs: '',
+    fats: ''
   })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const onSubmit = async (data) => {
+  // Auto-fetch nutrition data when food name changes
+  useEffect(() => {
+    const fetchNutritionData = async () => {
+      if (!formData.food.trim() || formData.food.length < 3) {
+        // Clear nutrition data if food name is too short
+        setFormData(prev => ({
+          ...prev,
+          calories: '',
+          protein: '',
+          carbs: '',
+          fats: ''
+        }))
+        return
+      }
+
+      setIsLoading(true)
+      setError('')
+
+      try {
+        const response = await fetch('http://localhost:3008/api/nutrition', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ food: formData.food }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) throw new Error(result.error || 'Something went wrong')
+
+        console.log('Fetched nutrition data:', result);
+
+        // Update form with fetched data
+        setFormData(prev => ({
+          ...prev,
+          calories: result.calories?.toString() || '0',
+          protein: result.protein?.toString() || '0',
+          carbs: result.carbs?.toString() || '0',
+          fats: result.fats?.toString() || '0'
+        }))
+
+      } catch (error) {
+        console.error('Error fetching nutrition data:', error.message)
+        setError(error.message)
+        // Clear nutrition fields on error
+        setFormData(prev => ({
+          ...prev,
+          calories: '',
+          protein: '',
+          carbs: '',
+          fats: ''
+        }))
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    // Debounce the API call by 1 second
+    const timeoutId = setTimeout(fetchNutritionData, 1000)
+    return () => clearTimeout(timeoutId)
+  }, [formData.food])
+
+  const handleFoodNameChange = (value) => {
+    setFormData(prev => ({
+      ...prev,
+      food: value
+    }))
+    setError('')
+  }
+
+  const handleManualFetch = async () => {
+    if (!formData.food.trim()) {
+      setError('Please enter a food name')
+      return
+    }
+
+    setIsLoading(true)
+    setError('')
+
     try {
       const response = await fetch('http://localhost:5000/api/nutrition', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ food: data.food }),
+        body: JSON.stringify({ food: formData.food }),
       });
 
       const result = await response.json();
@@ -42,14 +107,20 @@ const Nutrition = () => {
 
       console.log('Fetched nutrition data:', result);
 
-      // Use setValue to update the form inputs with the fetched data
-      setValue('calories', result.calories || 0);
-      setValue('protein', result.protein || 0);
-      setValue('carbs', result.carbs || 0);
-      setValue('fats', result.fats || 0);
+      // Update form with fetched data
+      setFormData(prev => ({
+        ...prev,
+        calories: result.calories?.toString() || '0',
+        protein: result.protein?.toString() || '0',
+        carbs: result.carbs?.toString() || '0',
+        fats: result.fats?.toString() || '0'
+      }))
 
     } catch (error) {
-      console.error('Error while submitting:', error.message)
+      console.error('Error fetching nutrition data:', error.message)
+      setError(error.message)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -65,49 +136,64 @@ const Nutrition = () => {
           </h1>
           <p className="text-gray-400 mt-2">Track your Calories</p>
         </div>
+        
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 shadow-2xl">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-white flex items-center gap-2 border-b border-gray-700 pb-2">
-                <div className="w-2 h-6 bg-gradient-to-b from-blue-400 to-purple-500 rounded"></div>
-                Nutrition
-              </h2>
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-white flex items-center gap-2 border-b border-gray-700 pb-2">
+              <div className="w-2 h-6 bg-gradient-to-b from-blue-400 to-purple-500 rounded"></div>
+              Nutrition
+            </h2>
 
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-300 mb-2">Food Name</label>
+            {error && (
+              <div className="bg-red-900/50 border border-red-500 rounded-lg p-3">
+                <p className="text-red-400 text-sm">⚠️ {error}</p>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Food Name</label>
+              <div className="relative">
                 <input
-                  {...register('food')}
-                  className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Food Name..."
+                  value={formData.food}
+                  onChange={(e) => handleFoodNameChange(e.target.value)}
+                  className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 pr-12"
+                  placeholder="Type a food name (e.g., apple, chicken breast)..."
                   autoComplete="off"
                 />
-                {errors.food && <p className="text-red-400 text-sm mt-2 flex items-center gap-1">⚠️ {errors.food.message}</p>}
+                {isLoading && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
+                  </div>
+                )}
               </div>
+              <p className="text-gray-500 text-xs mt-1">Nutrition data will auto-fetch as you type (after 3+ characters)</p>
+            </div>
 
-              {['calories', 'protein', 'carbs', 'fats'].map((field) => (
-                <div key={field} className="md:col-span-2 mt-4">
-                  <label className="block text-sm font-medium text-gray-300 mb-2 capitalize">{field}</label>
-                  <input
-                    type="number"
-                    readOnly
-                    {...register(field)}
-                    className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder={`${field.charAt(0).toUpperCase() + field.slice(1)}...`}
-                  />
-                  {errors[field] && <p className="text-red-400 text-sm mt-2 flex items-center gap-1">⚠️ {errors[field].message}</p>}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { field: 'calories', label: 'Calories', color: 'from-red-400 to-red-500' },
+                { field: 'protein', label: 'Protein (g)', color: 'from-green-400 to-green-500' },
+                { field: 'carbs', label: 'Carbs (g)', color: 'from-yellow-400 to-yellow-500' },
+                { field: 'fats', label: 'Fats (g)', color: 'from-purple-400 to-purple-500' }
+              ].map(({ field, label, color }) => (
+                <div key={field} className="bg-gray-700/30 rounded-xl p-4 border border-gray-600/50">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>
+                  <div className={`text-2xl font-bold bg-gradient-to-r ${color} bg-clip-text text-transparent`}>
+                    {formData[field] || '--'}
+                  </div>
                 </div>
               ))}
-
             </div>
 
             <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 hover:from-blue-600 hover:via-purple-600 hover:to-blue-700 text-white font-semibold py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2 mt-5"
+              onClick={handleManualFetch}
+              disabled={isLoading || !formData.food.trim()}
+              className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 hover:from-blue-600 hover:via-purple-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
             >
-              <Clipboard className="w-5 h-5" />
-              Submit
+              <Search className="w-5 h-5" />
+              {isLoading ? 'Fetching...' : 'Fetch Nutrition Data'}
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>
