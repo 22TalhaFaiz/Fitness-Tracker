@@ -247,7 +247,7 @@ const Navbar = () => {
             </li>
             <li>
               <Link 
-                to="/contact" 
+                to="/C" 
                 style={{ 
                   display: 'block', 
                   padding: '10px 0', 
@@ -346,7 +346,7 @@ const Navbar = () => {
                       <li><Link to="/404">404</Link></li>
                     </ul>
                   </li>
-                  <li><Link to="/contact">Contact</Link></li>
+                  <li><Link to="/C">Contact</Link></li>
                   <li><Link to="/l">Login</Link></li>
                   <li><Link to="/r">Register</Link></li>
                 </ul>

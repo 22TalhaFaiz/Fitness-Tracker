@@ -16,6 +16,7 @@ import BMICalc from './Pages/DashPages/BMICalc'
 import Progress from './Pages/DashPages/Progress'
 import Profile from './Pages/DashPages/Profile'
 import Settings from './Pages/DashPages/Settings'
+import Contact from './Components/Contact'
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="/" element={<Layout><Home /></Layout>} />
           <Route path="/l" element={<Layout><Login /></Layout>} />
           <Route path="/r" element={<Layout><Register /></Layout>} />
+          <Route path="/C" element={<Layout><Contact /></Layout>} />
 
 
 
