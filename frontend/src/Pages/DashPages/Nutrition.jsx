@@ -1,4 +1,4 @@
-import { Clipboard, Search, Utensils, TrendingUp, Calendar, Target, Sparkles } from "lucide-react";
+import { Clipboard, Search, Utensils, TrendingUp, Calendar, Target, Sparkles, X } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
 const Nutrition = () => {
@@ -17,6 +17,8 @@ const Nutrition = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [nutritionHistory, setNutritionHistory] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   // ✅ Fetch existing nutrition logs from DB
   const fetchNutritionHistory = async () => {
@@ -148,6 +150,23 @@ const Nutrition = () => {
     }
   };
 
+  // Filter nutrition history based on search query and category
+  const filteredHistory = nutritionHistory.filter(item => {
+    const matchesSearch = searchQuery === "" ||
+      item.food.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.notes && item.notes.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const matchesCategory = selectedCategory === "" || item.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  // Clear search filters
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("");
+  };
+
   // Calculate daily totals
   const dailyTotals = nutritionHistory
     .filter(item => new Date(item.date).toDateString() === new Date().toDateString())
@@ -157,6 +176,9 @@ const Nutrition = () => {
       carbs: totals.carbs + (item.carbs || 0),
       fats: totals.fats + (item.fats || 0),
     }), { calories: 0, protein: 0, carbs: 0, fats: 0 });
+
+  // Get unique categories for filter dropdown
+  const uniqueCategories = [...new Set(nutritionHistory.map(item => item.category))];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-2 sm:p-4 lg:p-6">
@@ -367,7 +389,7 @@ const Nutrition = () => {
           </div>
         </div>
 
-        {/* History Table */}
+        {/* History Table with Search */}
         <div className="mt-8 sm:mt-12">
           <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl">
             <div className="flex items-center gap-3 mb-4 sm:mb-6">
@@ -376,65 +398,108 @@ const Nutrition = () => {
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-white">Nutrition History</h2>
             </div>
-            
+
+            {/* Search Bar and Filters */}
+            <div className="mb-6 space-y-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Search Input */}
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search foods or notes..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 text-sm focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  />
+                </div>
+
+                {/* Category Filter */}
+                <div className="relative min-w-48">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full bg-slate-700/50 backdrop-blur-sm border border-slate-600/50 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all appearance-none"
+                  >
+                    <option value="">All Categories</option>
+                    {uniqueCategories.map(category => (
+                      <option key={category} value={category}>
+                        {category === "Breakfast" && "🌅"}
+                        {category === "Lunch" && "🥗"}
+                        {category === "Dinner" && "🍽️"}
+                        {category === "Snack" && "🍎"}
+                        {" " + category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Clear Filters Button */}
+                {(searchQuery || selectedCategory) && (
+                  <button
+                    onClick={clearFilters}
+                    className="flex items-center gap-2 px-4 py-3 bg-gray-600/50 hover:bg-gray-600/70 text-gray-300 rounded-xl transition-all duration-200 whitespace-nowrap"
+                  >
+                    <X className="w-4 h-4" />
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              {/* Results Count */}
+              <div className="text-sm text-gray-400">
+                Showing {filteredHistory.length} of {nutritionHistory.length} entries
+                {(searchQuery || selectedCategory) && (
+                  <span className="ml-2">
+                    {searchQuery && `• Search: "${searchQuery}"`}
+                    {selectedCategory && `• Category: ${selectedCategory}`}
+                  </span>
+                )}
+              </div>
+            </div>
+
             <div className="overflow-x-auto -mx-4 sm:mx-0">
               <div className="min-w-full inline-block align-middle">
-                <div className="overflow-hidden">
-                  <table className="min-w-full">
-                    <thead>
-                      <tr className="bg-slate-700/50">
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300">Food</th>
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300">Category</th>
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300">Cal</th>
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden sm:table-cell">Protein</th>
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden sm:table-cell">Carbs</th>
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden sm:table-cell">Fats</th>
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden lg:table-cell">Serving</th>
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden lg:table-cell">Goal</th>
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden xl:table-cell">Notes</th>
-                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-300">Date</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-700/50">
-                      {nutritionHistory.length > 0 ? (
-                        nutritionHistory.map((item, index) => (
-                          <tr
-                            key={item._id}
-                            className="hover:bg-slate-700/30 transition-colors duration-200"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          >
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-white font-medium">{item.food}</td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-300">
-                              <span className="inline-flex px-2 py-1 rounded-full text-xs bg-slate-700 text-gray-300">
-                                {item.category}
-                              </span>
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-red-400 font-semibold">{item.calories}</td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-green-400 font-semibold hidden sm:table-cell">{item.protein}g</td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-yellow-400 font-semibold hidden sm:table-cell">{item.carbs}g</td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-purple-400 font-semibold hidden sm:table-cell">{item.fats}g</td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-400 hidden lg:table-cell">{item.servingSize || "--"}</td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-400 hidden lg:table-cell">{item.goal}</td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-400 hidden xl:table-cell max-w-32 truncate">{item.notes || "--"}</td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-400">
-                              {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="10" className="text-center py-8 sm:py-12">
-                            <div className="flex flex-col items-center justify-center space-y-3">
-                              <Utensils className="w-12 h-12 text-gray-600" />
-                              <p className="text-gray-500 text-sm sm:text-base">No nutrition data saved yet</p>
-                              <p className="text-xs text-gray-600">Start tracking by adding your first meal!</p>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+               <div className="overflow-x-auto">
+  <table className="min-w-[800px] md:min-w-full border-collapse">
+    <thead>
+      <tr className="bg-slate-700/50">
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300">Food</th>
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300">Category</th>
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300">Cal</th>
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden md:table-cell">Protein</th>
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden md:table-cell">Carbs</th>
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden md:table-cell">Fats</th>
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden lg:table-cell">Serving</th>
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden lg:table-cell">Goal</th>
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300 hidden xl:table-cell">Notes</th>
+        <th className="px-3 py-2 text-left text-xs sm:text-sm font-semibold text-gray-300">Date</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-slate-700/50">
+      {filteredHistory.length > 0 ? filteredHistory.map((item, index) => (
+        <tr key={item._id} className="hover:bg-slate-700/30 transition-colors duration-200">
+          <td className="px-3 py-2 text-xs sm:text-sm text-white font-medium">{item.food}</td>
+          <td className="px-3 py-2 text-xs sm:text-sm text-gray-300">
+            <span className="inline-flex px-2 py-1 rounded-full text-xs bg-slate-700 text-gray-300">{item.category}</span>
+          </td>
+          <td className="px-3 py-2 text-xs sm:text-sm text-red-400 font-semibold">{item.calories}</td>
+          <td className="px-3 py-2 text-xs sm:text-sm text-green-400 font-semibold hidden md:table-cell">{item.protein}g</td>
+          <td className="px-3 py-2 text-xs sm:text-sm text-yellow-400 font-semibold hidden md:table-cell">{item.carbs}g</td>
+          <td className="px-3 py-2 text-xs sm:text-sm text-purple-400 font-semibold hidden md:table-cell">{item.fats}g</td>
+          <td className="px-3 py-2 text-gray-400 hidden lg:table-cell">{item.servingSize}</td>
+          <td className="px-3 py-2 text-gray-400 hidden lg:table-cell">{item.goal}</td>
+          <td className="px-3 py-2 text-xs sm:text-sm text-gray-400 hidden xl:table-cell truncate max-w-[120px]">{item.notes || "--"}</td>
+          <td className="px-3 py-2 text-xs sm:text-sm text-gray-400">{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
+        </tr>
+      )) : (
+        <tr>
+          <td colSpan="10" className="text-center py-6 text-gray-400">No nutrition data found</td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
               </div>
             </div>
           </div>
