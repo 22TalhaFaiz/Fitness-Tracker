@@ -6,6 +6,7 @@ import { Plus, Trash2, Dumbbell, Clock, Flame, Loader2 } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 
 // Zod Schema
 const exerciseSchema = z.object({
@@ -158,6 +159,9 @@ const Workout = () => {
               <h2 className="text-xl font-semibold text-white flex items-center gap-2 border-b border-gray-700 pb-2">
                 <div className="w-2 h-6 bg-gradient-to-b from-blue-400 to-purple-500 rounded"></div>
                 Workout Details
+                <button className="px-4 py-2 bg-green-500/20 text-green-400 rounded-lg border border-green-500/30 hover:bg-green-500/30 transition-all duration-200 text-sm font-medium">
+               <Link to="/dashboard/wget"> All Workouts </Link>
+                </button>
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

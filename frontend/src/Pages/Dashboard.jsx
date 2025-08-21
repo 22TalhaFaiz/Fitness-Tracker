@@ -6,6 +6,7 @@ import WorkoutChart from "../Components/DashboardComponents/Charts/WorkoutChart"
 import SearchModel from "../Components/SearchModel";
 import { FaChartLine, FaDumbbell, FaFire, FaAppleAlt, FaTrophy, FaPlus, FaBolt } from "react-icons/fa";
 import NutritionCard from "../Components/DashboardComponents/Charts/NutritionChart";
+import ProgressCharts from "../Components/DashboardComponents/Charts/ProgressChart";
 
 const DashboardHome = () => {
   return (
@@ -28,7 +29,7 @@ const DashboardHome = () => {
             <p className="text-neutral-400 text-lg ml-13">Track your progress and stay motivated on your fitness journey</p>
             <div className="h-1.5 w-32 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-4 ml-13"></div>
           </div>
-          
+
           {/* Quick Stats */}
           <div className="hidden lg:flex items-center gap-4">
             <div className="text-right">
@@ -61,14 +62,14 @@ const DashboardHome = () => {
                   <p className="text-sm text-neutral-400">Find workouts, meals, or exercises</p>
                 </div>
               </div>
-              
+
               {/* Quick Action Buttons */}
               <div className="flex items-center gap-2">
                 <button className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30 hover:bg-blue-500/30 transition-all duration-200 text-sm font-medium">
-                <Link to="/dashboard/workout" >Log Workout</Link>
+                  <Link to="/dashboard/workout" >Log Workout</Link>
                 </button>
                 <button className="px-4 py-2 bg-green-500/20 text-green-400 rounded-lg border border-green-500/30 hover:bg-green-500/30 transition-all duration-200 text-sm font-medium">
-               <Link to="/dashboard/nutrition"> Add Meal </Link>
+                  <Link to="/dashboard/nutrition"> Add Meal </Link>
                 </button>
               </div>
             </div>
@@ -90,7 +91,7 @@ const DashboardHome = () => {
           </div>
 
           {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Workout Chart */}
             <div className="bg-gradient-to-br from-orange-500/10 to-red-500/5 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
               <div className="flex items-center gap-3 mb-4">
@@ -131,7 +132,7 @@ const DashboardHome = () => {
                 </div>
               </div>
               <div className="h-48 relative">
-            <NutritionCard/>
+                <NutritionCard />
                 <div className="absolute top-2 right-2">
                   <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-full">
                     <div className="w-2 h-2 bg-green-400 rounded-full"></div>
@@ -146,36 +147,35 @@ const DashboardHome = () => {
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Progress Chart */}
-            <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/5 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <FaTrophy className="text-white text-lg" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white">Progress</h3>
-                  <p className="text-sm text-neutral-400">Goals & achievements</p>
-                </div>
+          {/* Progress Chart in New Row */}
+          <div className="mt-6 bg-gradient-to-br from-purple-500/10 to-blue-500/5 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <FaTrophy className="text-white text-lg" />
               </div>
-              <div className="h-48 relative">
-                {/* <ProgressChart /> */}
-                <div className="absolute top-2 right-2">
-                  <div className="flex items-center gap-1 px-2 py-1 bg-purple-500/20 rounded-full">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-xs text-purple-300 font-medium">Improving</span>
-                  </div>
-                </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Progress</h3>
+                <p className="text-sm text-neutral-400">Goals & achievements</p>
               </div>
-              <div className="mt-4 pt-4 border-t border-purple-500/20">
-                <div className="flex justify-between text-sm">
-                  <span className="text-neutral-400">Monthly Goal</span>
-                  <span className="text-purple-400 font-semibold">73% Complete</span>
+            </div>
+            <div className="mt-6 bg-gradient-to-br from-purple-500/10 to-blue-500/5 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+              <ProgressCharts />
+              <div className="absolute top-2 right-2">
+                <div className="flex items-center gap-1 px-2 py-1 bg-purple-500/20 rounded-full">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <span className="text-xs text-purple-300 font-medium">Improving</span>
                 </div>
               </div>
             </div>
+            <div className="mt-4 pt-4 border-t border-purple-500/20">
+              <div className="flex justify-between text-sm">
+                <span className="text-neutral-400">Monthly Goal</span>
+                <span className="text-purple-400 font-semibold">73% Complete</span>
+              </div>
+            </div>
           </div>
-
           {/* Recent Activity */}
           <div className="bg-gradient-to-br from-neutral-800/60 to-neutral-900/40 backdrop-blur-sm rounded-2xl p-6 border border-neutral-700/50 shadow-xl">
             <div className="flex items-center justify-between mb-6">
@@ -189,10 +189,10 @@ const DashboardHome = () => {
                 </div>
               </div>
               <button className="text-blue-400 hover:text-blue-300 transition-colors text-sm font-medium">
-                View All
+               <Link to="/dashboard/wget"> View All </Link>
               </button>
             </div>
-            
+
             <div className="bg-gradient-to-br from-neutral-700/30 to-neutral-800/20 rounded-xl p-4 border border-neutral-600/30">
               <RecentWorkouts />
             </div>
@@ -259,8 +259,8 @@ const DashboardHome = () => {
       {/* Enhanced Background Pattern */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/3 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-500/3 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-3/4 left-3/4 w-64 h-64 bg-green-500/3 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-500/3 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-3/4 left-3/4 w-64 h-64 bg-green-500/3 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
       </div>
     </main>
   );

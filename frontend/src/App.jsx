@@ -17,6 +17,8 @@ import Progress from './Pages/DashPages/Progress'
 import Profile from './Pages/DashPages/Profile'
 import Settings from './Pages/DashPages/Settings'
 import Contact from './Components/Contact'
+import WorkoutGet from './Pages/DashPages/WorkoutGet'
+import NutritionGet from './Pages/DashPages/NutritionGet'
 
 
 function App() {
@@ -43,8 +45,10 @@ function App() {
           }
         >
           <Route index element={<Dashboard />} />                {/* /dashboard */}
-          <Route path="workout" element={<Workout />} />         {/* /dashboard/workout */}
+          <Route path="workout" element={<Workout />} /> 
+          <Route path="wget" element={<WorkoutGet />} />                                                     {/* /dashboard/workout */}
           <Route path="nutrition" element={<Nutrition />} />
+          <Route path="nget" element={<NutritionGet />} />
           <Route path="bmi" element={<BMICalc />} />
           <Route path="progress" element={<Progress />} />
           <Route path="profile" element={<Profile />} />

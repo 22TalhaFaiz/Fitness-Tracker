@@ -37,3 +37,21 @@ exports.getWorkouts = async (req,res) => {
     }
     
 }
+exports.deleteWorkout = async (req, res) => {
+  try {
+    const userId = req.session.user.id; // Make sure user is authenticated
+    const workoutId = req.params.id;
+
+    const workout = await Workout.findOne({ _id: workoutId, userId });
+
+    if (!workout) {
+      return res.status(404).json({ message: 'Workout not found' });
+    }
+
+    await workout.deleteOne();
+    res.json({ message: 'Workout deleted successfully' });
+  } catch (error) {
+    console.error('Delete workout error:', error.message);
+    res.status(500).json({ message: 'Failed to delete workout', error: error.message });
+  }
+};

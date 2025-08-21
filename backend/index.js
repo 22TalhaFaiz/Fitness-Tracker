@@ -34,6 +34,7 @@ app.use("/api/workouts", require("./Routes/workoutRoutes"));
 app.use("/api/analytics", require("./Routes/analyticsRoutes"));
 app.use("/api/profile", require("./Routes/profileRoute"));
 app.use("/api/nutrition", require("./Routes/nutritionRoute"))
+app.use("/api/progress", require("./Routes/progressRoutes"))
 
 // ✅ Start server
 db().then(() => {
