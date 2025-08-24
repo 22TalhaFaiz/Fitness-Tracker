@@ -49,7 +49,7 @@ const Navbar = () => {
             </li>
             <li>
               <Link 
-                to="/about-us" 
+                to="#" 
                 style={{ 
                   display: 'block', 
                   padding: '10px 0', 
@@ -70,28 +70,7 @@ const Navbar = () => {
             </li>
             <li>
               <Link 
-                to="/classes" 
-                style={{ 
-                  display: 'block', 
-                  padding: '10px 0', 
-                  color: '#151515', 
-                  textDecoration: 'none',
-                  borderBottom: '1px solid #151515',
-                  fontWeight: 500,
-                  fontFamily: '"Oswald", sans-serif',
-                  fontSize: '15px',
-                  transition: 'all 0.3s'
-                }}
-                onMouseEnter={(e) => e.target.style.color = '#f36100'}
-                onMouseLeave={(e) => e.target.style.color = '#151515'}
-                onClick={() => setMenuOpen(false)}
-              >
-                Classes
-              </Link>
-            </li>
-            <li>
-              <Link 
-                to="/services" 
+                to="#" 
                 style={{ 
                   display: 'block', 
                   padding: '10px 0', 
@@ -109,141 +88,6 @@ const Navbar = () => {
               >
                 Services
               </Link>
-            </li>
-            <li>
-              <Link 
-                to="/team" 
-                style={{ 
-                  display: 'block', 
-                  padding: '10px 0', 
-                  color: '#151515', 
-                  textDecoration: 'none',
-                  borderBottom: '1px solid #151515',
-                  fontWeight: 500,
-                  fontFamily: '"Oswald", sans-serif',
-                  fontSize: '15px',
-                  transition: 'all 0.3s'
-                }}
-                onMouseEnter={(e) => e.target.style.color = '#f36100'}
-                onMouseLeave={(e) => e.target.style.color = '#151515'}
-                onClick={() => setMenuOpen(false)}
-              >
-                Our Team
-              </Link>
-            </li>
-            <li>
-              <div>
-                <Link 
-                  to="#" 
-                  style={{ 
-                    display: 'block', 
-                    padding: '10px 0', 
-                    color: '#151515', 
-                    textDecoration: 'none',
-                    borderBottom: '1px solid #151515',
-                    fontWeight: 500,
-                    fontFamily: '"Oswald", sans-serif',
-                    fontSize: '15px',
-                    transition: 'all 0.3s'
-                  }}
-                  onMouseEnter={(e) => e.target.style.color = '#f36100'}
-                  onMouseLeave={(e) => e.target.style.color = '#151515'}
-                >
-                  Pages
-                </Link>
-                <ul style={{ listStyle: 'none', padding: '0 0 0 15px', margin: 0 }}>
-                  <li>
-                    <Link 
-                      to="/class-timetable" 
-                      style={{ 
-                        display: 'block', 
-                        padding: '8px 0', 
-                        color: '#666', 
-                        textDecoration: 'none',
-                        fontSize: '14px',
-                        transition: 'all 0.3s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.color = '#f36100'}
-                      onMouseLeave={(e) => e.target.style.color = '#666'}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Classes timetable
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      to="/bmi-calculator" 
-                      style={{ 
-                        display: 'block', 
-                        padding: '8px 0', 
-                        color: '#666', 
-                        textDecoration: 'none',
-                        fontSize: '14px',
-                        transition: 'all 0.3s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.color = '#f36100'}
-                      onMouseLeave={(e) => e.target.style.color = '#666'}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      BMI Calculator
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      to="/gallery" 
-                      style={{ 
-                        display: 'block', 
-                        padding: '8px 0', 
-                        color: '#666', 
-                        textDecoration: 'none',
-                        fontSize: '14px',
-                        transition: 'all 0.3s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.color = '#f36100'}
-                      onMouseLeave={(e) => e.target.style.color = '#666'}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Gallery
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      to="/blog" 
-                      style={{ 
-                        display: 'block', 
-                        padding: '8px 0', 
-                        color: '#666', 
-                        textDecoration: 'none',
-                        fontSize: '14px',
-                        transition: 'all 0.3s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.color = '#f36100'}
-                      onMouseLeave={(e) => e.target.style.color = '#666'}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Our Blog
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      to="/404" 
-                      style={{ 
-                        display: 'block', 
-                        padding: '8px 0', 
-                        color: '#666', 
-                        textDecoration: 'none',
-                        fontSize: '14px',
-                        transition: 'all 0.3s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.color = '#f36100'}
-                      onMouseLeave={(e) => e.target.style.color = '#666'}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      404
-                    </Link>
-                  </li>
-                </ul>
-              </div>
             </li>
             <li>
               <Link 
@@ -334,18 +178,7 @@ const Navbar = () => {
               <nav className="nav-menu">
                 <ul>
                   <li><Link to="/">Home</Link></li>
-                  <li><Link to="/about-us">About Us</Link></li>
-                  <li><Link to="/services">Services</Link></li>
-                  <li>
-                    <Link to="#">Pages</Link>
-                    <ul className="dropdown">
-                      <li><Link to="/class-timetable">Classes timetable</Link></li>
-                      <li><Link to="/bmi-calculator">BMI Calculator</Link></li>
-                      <li><Link to="/gallery">Gallery</Link></li>
-                      <li><Link to="/blog">Our Blog</Link></li>
-                      <li><Link to="/404">404</Link></li>
-                    </ul>
-                  </li>
+                  <li><Link to="/ab">About Us</Link></li>
                   <li><Link to="/C">Contact</Link></li>
                   <li><Link to="/l">Login</Link></li>
                   <li><Link to="/r">Register</Link></li>

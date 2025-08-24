@@ -92,6 +92,12 @@ const Login = () => {
             Register
           </Link>
         </p>
+        <p className="text-sm text-center text-orange-600 mt-4">
+          Forgot Your Password? Click Here{" "}
+          <Link to="/fp" className="underline text-orange-500">
+            Forgot Password
+          </Link>
+        </p>
 
         <ToastContainer />
       </form>

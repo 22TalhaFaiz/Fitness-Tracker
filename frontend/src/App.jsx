@@ -19,6 +19,8 @@ import Settings from './Pages/DashPages/Settings'
 import Contact from './Components/Contact'
 import WorkoutGet from './Pages/DashPages/WorkoutGet'
 import NutritionGet from './Pages/DashPages/NutritionGet'
+import About from './Pages/About'
+import ForgotPasswordForm from './Pages/Fp'
 
 
 function App() {
@@ -30,9 +32,11 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Layout><Home /></Layout>} />
+          <Route path="/ab" element={<Layout><About /></Layout>} />
           <Route path="/l" element={<Layout><Login /></Layout>} />
           <Route path="/r" element={<Layout><Register /></Layout>} />
           <Route path="/C" element={<Layout><Contact /></Layout>} />
+          <Route path="/fp" element={<ForgotPasswordForm />} />
 
 
 

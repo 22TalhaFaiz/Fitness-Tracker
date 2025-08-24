@@ -5,6 +5,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
@@ -30,6 +31,8 @@ const schema = z.object({
 });
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const {
@@ -71,6 +74,8 @@ const Register = () => {
 
       toast.success("User registered successfully");
       reset();
+      navigate("/l");
+
       setSelectedFile(null); // Clear selected file
     } catch (err) {
       if (err?.response?.status === 409) {

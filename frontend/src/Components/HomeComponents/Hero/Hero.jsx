@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
   useEffect(() => {
@@ -31,9 +32,9 @@ const Hero = () => {
                   <h1>
                     Be <strong>strong</strong> training hard
                   </h1>
-                  <a href="#" className="primary-btn">
+               <Link to="/r" className="primary-btn">
                     Get info
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -49,9 +50,9 @@ const Hero = () => {
                   <h1>
                     Be <strong>strong</strong> training hard
                   </h1>
-                  <a href="#" className="primary-btn">
+                  <Link to="/r" className="primary-btn">
                     Get info
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
